@@ -1,0 +1,24 @@
+{% extends 'products/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1>{{ product.name }}</h1>
+            <table class="table">
+                <tr>
+                    <td>Цена:</td>
+                    <td>{{ product.price }}</td>
+                </tr>
+                <tr>
+                    <td>Опубликован:</td>
+                    <td>{{ product.created_at }}</td>
+                </tr>
+            </table>
+            <form method="post" action="{% url 'products:delete_product' product.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Удалить товар</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
