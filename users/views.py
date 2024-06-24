@@ -45,25 +45,23 @@ class ProfileView(UpdateView):
     model = User
     form_class = UserProfileForm
     success_url = reverse_lazy('users:profile')
+    login_url = reverse_lazy('users:login')  # Specify your login URL
 
     def form_valid(self, form):
         if form.is_valid():
             self.object = form.save()
-            if form.data.get('need_generate', False):
-                self.object.set_password(
-                    self.object.make_random_password(length=12)
-                )
+            if self.request.POST.get('need_generate', False):
+                self.object.set_password(self.object.make_random_password(length=12))
                 self.object.save()
-
-        return super().form_valid(form)
+            return super().form_valid(form)
 
     def get_object(self, queryset=None):
         return self.request.user
 
-
 class LoginView(LoginView):
     template_name = 'users/login.html'
     form_class = AuthenticationForm
+    redirect_authenticated_user = True
 
 class LogoutView(AuthLogoutView):
     next_page = "users:login"
@@ -76,7 +74,6 @@ class LogoutView(AuthLogoutView):
             # Перенаправляем запрос в PasswordResetView
             return PasswordResetView.as_view()(request)
         return super().post(request, *args, **kwargs)
-
 class PasswordResetView(View):
     form_class = PasswordResetForm
 
@@ -89,12 +86,12 @@ class PasswordResetView(View):
         try:
             user = User.objects.get(email=email)
             new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=12))
-            user.password = make_password(new_password)
+            user.set_password(new_password)  # Use set_password method to properly hash the password
             user.save()
 
-            subject = 'Восстановление пароля',
-            message = f'Ваш новый пароль: {new_password}',
-            send_email(subject, message, [email])
+            subject = 'Восстановление пароля'
+            message = f'Ваш новый пароль: {new_password}'
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [email])  # Use your email settings here
 
             return render(request, 'users/password_reset_done.html')
         except User.DoesNotExist:

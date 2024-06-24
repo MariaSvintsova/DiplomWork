@@ -18,6 +18,7 @@
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">Удалить товар</button>
             </form>
+            <a href="{% url 'products:product_update' product.pk %}" class="btn btn-warning">Редактировать товар</a>
         </div>
     </div>
 </div>

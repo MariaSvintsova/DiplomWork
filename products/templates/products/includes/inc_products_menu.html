@@ -2,7 +2,6 @@
 <ul class="list-unstyled text-small">
     <li><a class="text-muted" href="{% url 'products:home' %}">Главная</a></li>
     {% if user.is_authenticated %}
-        <li><a class="text-muted" href="{% url 'users:profile' %}">Профиль</a></li>
         <form id="logout-form" action="{% url 'users:logout' %}" method="post" style="display: none;">
             {% csrf_token %}
         </form>

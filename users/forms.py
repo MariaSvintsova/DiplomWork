@@ -27,6 +27,7 @@ class UserRegisterForm(UserCreationForm):
         if not re.match(r'^\+7\d{10}$', phone):
             raise forms.ValidationError("Телефон должен начинаться с +7, после чего должно идти 10 цифр.")
         return phone
+
 class UserProfileForm(UserChangeForm):
 
     class Meta:
@@ -35,7 +36,7 @@ class UserProfileForm(UserChangeForm):
 
 
     def __init__(self, *args, **kwargs):
-        super.__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')

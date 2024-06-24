@@ -16,14 +16,15 @@ from products.models import Product
 from rest_framework.pagination import PageNumberPagination
 
 class ProductPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 4
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 10
 
 class ProductListView(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'products/product_list.html'
     pagination_class = ProductPagination
+    paginate_by = 4
 
 
     def get_queryset(self):
@@ -40,6 +41,7 @@ class ProductListView(LoginRequiredMixin, ListView):
 
 class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
+    template_name = 'products/product_detail.html'
 
     @method_decorator(cache_page(60 * 15))
     @method_decorator(vary_on_cookie)
@@ -74,14 +76,8 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        if self.request.user == self.object.owner:
-            ProductFormset = inlineformset_factory(Product, extra=1)
-            if self.request.method == 'POST':
-                context_data['formset'] = ProductFormset(self.request.POST, instance=self.object)
-            else:
-                context_data['formset'] = ProductFormset(instance=self.object)
-            return context_data
-        raise HttpResponseForbidden
+        return context_data
+
 
 @cache_page(60)
 def toggle_activity(request, pk):
