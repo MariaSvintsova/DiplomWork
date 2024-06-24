@@ -45,6 +45,7 @@ class ProductTests(TestCase):
         })
         self.assertEqual(response.status_code, 302)
 
+
     def test_product_list_view_authenticated(self):
         self.client.login(username='testuser', password='password')
         response = self.client.get(reverse('home'))
